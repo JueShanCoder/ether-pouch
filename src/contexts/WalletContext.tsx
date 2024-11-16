@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 interface WalletContextType {
   wallet: ethers.HDNodeWallet | null;
   isLoading: boolean;
-  createWallet: (password: string) => Promise<string>;
+  createWallet: (password: string) => Promise<{ mnemonic: string, wallet: ethers.HDNodeWallet }>;
   loadWallet: (password: string) => Promise<void>;
   restoreFromMnemonic: (mnemonic: string, password: string) => Promise<void>;
   switchNetwork: (chainId: number) => Promise<void>;
@@ -18,12 +18,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [wallet, setWallet] = useState<ethers.HDNodeWallet | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const createWallet = async (password: string): Promise<string> => {
+  const createWallet = async (password: string): Promise<{ mnemonic: string, wallet: ethers.HDNodeWallet }> => {
     try {
       setIsLoading(true);
       const { wallet: newWallet, mnemonic } = WalletService.generateWallet();
       await WalletService.storeWallet(newWallet, mnemonic, password);
-      return mnemonic; // 先返回助记词
+      return { mnemonic, wallet: newWallet }; // 返回助记词和钱包实例
     } catch (error) {
       toast.error("创建钱包失败");
       throw error;
