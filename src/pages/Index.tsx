@@ -10,20 +10,20 @@ const Index = () => {
             <Wallet className="w-12 h-12 text-primary" />
           </div>
           <h1 className="text-5xl font-bold gradient-text tracking-tight">
-            Ether Pouch
+            ChainSwitch
           </h1>
           <p className="text-gray-600 text-lg">
-            安全便捷的以太坊钱包管理工具
+            无感切链的多链钱包管理工具
           </p>
           <div className="flex gap-2 items-center justify-center text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
-              安全加密
+              多链支持
             </span>
             <span className="mx-2">•</span>
-            <span>本地存储</span>
+            <span>无感切换</span>
             <span className="mx-2">•</span>
-            <span>简单易用</span>
+            <span>安全便捷</span>
           </div>
         </div>
         <CreateWallet />

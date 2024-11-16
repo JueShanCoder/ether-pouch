@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# ChainSwitch - Seamless Multi-Chain Wallet
 
 ## Project info
 
@@ -52,13 +52,14 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with .
+This project is built with:
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- Ethers.js for blockchain interactions
 
 ## How can I deploy this project?
 
