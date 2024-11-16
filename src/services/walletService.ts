@@ -12,14 +12,14 @@ export class WalletService {
   private static readonly MNEMONIC_KEY = 'encrypted_mnemonic';
 
   // Generate new wallet with mnemonic
-  static generateWallet(): { wallet: ethers.Wallet; mnemonic: string } {
+  static generateWallet(): { wallet: ethers.HDNodeWallet; mnemonic: string } {
     const mnemonic = bip39.generateMnemonic();
     const wallet = ethers.Wallet.fromPhrase(mnemonic);
     return { wallet, mnemonic };
   }
 
   // Create wallet from mnemonic
-  static createFromMnemonic(mnemonic: string): ethers.Wallet {
+  static createFromMnemonic(mnemonic: string): ethers.HDNodeWallet {
     return ethers.Wallet.fromPhrase(mnemonic);
   }
 
