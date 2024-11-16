@@ -46,16 +46,8 @@ export class WalletService {
       const derivedKey = CryptoService.deriveKey(password, salt);
       const privateKey = CryptoService.decrypt(encryptedPrivateKey, derivedKey);
       
-      // Create random wallet and replace its private key
-      const randomWallet = ethers.Wallet.createRandom() as ethers.HDNodeWallet;
-      return new ethers.HDNodeWallet(
-        privateKey,
-        randomWallet.provider,
-        randomWallet.address,
-        randomWallet.publicKey,
-        randomWallet.mnemonic,
-        randomWallet.path
-      );
+      // Create wallet from private key using ethers.js utility function
+      return ethers.HDNodeWallet.fromPhrase(ethers.Wallet.fromPrivateKey(privateKey).mnemonic.phrase);
     } catch (error) {
       console.error('Failed to load wallet:', error);
       return null;
