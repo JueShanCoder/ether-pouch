@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,6 @@ export function WalletDashboard() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  // Fetch balance
   const fetchBalance = async () => {
     if (wallet?.address) {
       try {
@@ -46,7 +45,7 @@ export function WalletDashboard() {
   };
 
   // Fetch balance on component mount
-  useState(() => {
+  useEffect(() => {
     fetchBalance();
   }, [wallet?.address]);
 
