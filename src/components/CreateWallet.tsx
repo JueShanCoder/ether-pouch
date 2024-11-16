@@ -9,6 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { CreateWalletForm } from './wallet/CreateWalletForm';
 import { RestoreWalletForm } from './wallet/RestoreWalletForm';
@@ -29,8 +30,10 @@ export function CreateWallet() {
     }
     try {
       const newMnemonic = await createWallet(password);
-      setMnemonic(newMnemonic);
-      setShowMnemonicDialog(true);
+      if (newMnemonic) {
+        setMnemonic(newMnemonic);
+        setShowMnemonicDialog(true);
+      }
     } catch (error) {
       toast.error("创建钱包失败");
     }
@@ -98,7 +101,7 @@ export function CreateWallet() {
       </Card>
 
       <Dialog open={showMnemonicDialog} onOpenChange={setShowMnemonicDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>请保存您的助记词</DialogTitle>
             <DialogDescription>
@@ -106,11 +109,16 @@ export function CreateWallet() {
             </DialogDescription>
           </DialogHeader>
           <div className="p-4 bg-gray-100 rounded-md">
-            <code className="text-sm break-all">{mnemonic}</code>
+            <code className="text-sm break-all font-mono">{mnemonic}</code>
           </div>
-          <Button onClick={() => setShowMnemonicDialog(false)}>
-            我已安全保存
-          </Button>
+          <DialogFooter>
+            <Button 
+              onClick={() => setShowMnemonicDialog(false)}
+              className="w-full"
+            >
+              我已安全保存
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
