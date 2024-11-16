@@ -1,15 +1,12 @@
-import { Web3Provider } from '@/contexts/Web3Context';
-import { WalletCard } from '@/components/WalletCard';
+import { CreateWallet } from '@/components/CreateWallet';
 
 const Index = () => {
   return (
-    <Web3Provider>
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <WalletCard />
-        </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <CreateWallet />
       </div>
-    </Web3Provider>
+    </div>
   );
 };
 
