@@ -6,8 +6,9 @@ import { useToast } from '@/components/ui/use-toast';
 interface WalletContextType {
   wallet: ethers.Wallet | null;
   isLoading: boolean;
-  createWallet: (password: string) => Promise<void>;
+  createWallet: (password: string) => Promise<string>;
   loadWallet: (password: string) => Promise<void>;
+  restoreFromMnemonic: (mnemonic: string, password: string) => Promise<void>;
   switchNetwork: (chainId: number) => Promise<void>;
 }
 
@@ -21,21 +22,43 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const createWallet = async (password: string) => {
     try {
       setIsLoading(true);
-      const newWallet = WalletService.generateWallet();
-      await WalletService.storeWallet(newWallet, password);
-      // Convert HDNodeWallet to Wallet before setting state
-      const baseWallet = new ethers.Wallet(newWallet.privateKey);
-      setWallet(baseWallet);
+      const { wallet: newWallet, mnemonic } = WalletService.generateWallet();
+      await WalletService.storeWallet(newWallet, mnemonic, password);
+      setWallet(newWallet);
       toast({
-        title: "Wallet Created",
-        description: "Your wallet has been created and encrypted successfully",
+        title: "钱包创建成功",
+        description: "请务必保存好您的助记词",
+      });
+      return mnemonic;
+    } catch (error) {
+      toast({
+        title: "错误",
+        description: "创建钱包失败",
+        variant: "destructive",
+      });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const restoreFromMnemonic = async (mnemonic: string, password: string) => {
+    try {
+      setIsLoading(true);
+      const newWallet = WalletService.createFromMnemonic(mnemonic);
+      await WalletService.storeWallet(newWallet, mnemonic, password);
+      setWallet(newWallet);
+      toast({
+        title: "钱包恢复成功",
+        description: "您的钱包已成功恢复",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to create wallet",
+        title: "错误",
+        description: "恢复钱包失败",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -93,6 +116,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         isLoading,
         createWallet,
         loadWallet,
+        restoreFromMnemonic,
         switchNetwork,
       }}
     >

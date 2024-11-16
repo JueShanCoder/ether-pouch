@@ -1,29 +1,39 @@
 import { ethers } from 'ethers';
 import { CryptoService } from './cryptoService';
+import * as bip39 from 'bip39';
 
 export class WalletService {
   private static readonly WALLET_KEY = 'encrypted_wallet';
   private static readonly SALT_KEY = 'wallet_salt';
+  private static readonly MNEMONIC_KEY = 'encrypted_mnemonic';
 
-  // Generate new wallet
-  static generateWallet(): ethers.HDNodeWallet {
-    return ethers.Wallet.createRandom() as ethers.HDNodeWallet;
+  // Generate new wallet with mnemonic
+  static generateWallet(): { wallet: ethers.HDNodeWallet; mnemonic: string } {
+    const mnemonic = bip39.generateMnemonic();
+    const wallet = ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
+    return { wallet, mnemonic };
   }
 
-  // Encrypt and store wallet
-  static async storeWallet(wallet: ethers.HDNodeWallet, password: string): Promise<void> {
+  // Create wallet from mnemonic
+  static createFromMnemonic(mnemonic: string): ethers.HDNodeWallet {
+    return ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
+  }
+
+  // Encrypt and store wallet with mnemonic
+  static async storeWallet(wallet: ethers.HDNodeWallet, mnemonic: string, password: string): Promise<void> {
     const salt = CryptoService.generateSalt();
     const derivedKey = CryptoService.deriveKey(password, salt);
     const encryptedPrivateKey = CryptoService.encrypt(wallet.privateKey, derivedKey);
+    const encryptedMnemonic = CryptoService.encrypt(mnemonic, derivedKey);
 
-    // Store in IndexedDB
     const db = await this.openDatabase();
     const tx = db.transaction(['wallets'], 'readwrite');
     const store = tx.objectStore('wallets');
     
     await Promise.all([
       this.putInStore(store, this.WALLET_KEY, encryptedPrivateKey),
-      this.putInStore(store, this.SALT_KEY, salt)
+      this.putInStore(store, this.SALT_KEY, salt),
+      this.putInStore(store, this.MNEMONIC_KEY, encryptedMnemonic)
     ]);
   }
 
