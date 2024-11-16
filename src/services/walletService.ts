@@ -14,13 +14,13 @@ export class WalletService {
   // Generate new wallet with mnemonic
   static generateWallet(): { wallet: ethers.HDNodeWallet; mnemonic: string } {
     const mnemonic = bip39.generateMnemonic();
-    const wallet = ethers.Wallet.fromPhrase(mnemonic);
+    const wallet = ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
     return { wallet, mnemonic };
   }
 
   // Create wallet from mnemonic
   static createFromMnemonic(mnemonic: string): ethers.HDNodeWallet {
-    return ethers.Wallet.fromPhrase(mnemonic);
+    return ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
   }
 
   static async storeWallet(wallet: ethers.HDNodeWallet, mnemonic: string, password: string): Promise<void> {
@@ -41,7 +41,7 @@ export class WalletService {
   }
 
   // Load wallet from storage
-  static async loadWallet(password: string): Promise<ethers.Wallet | null> {
+  static async loadWallet(password: string): Promise<ethers.HDNodeWallet | null> {
     try {
       const db = await this.openDatabase();
       const tx = db.transaction(['wallets'], 'readonly');
@@ -59,15 +59,13 @@ export class WalletService {
       const derivedKey = CryptoService.deriveKey(password, salt);
       const privateKey = CryptoService.decrypt(encryptedPrivateKey, derivedKey);
       
-      // Create wallet from private key using ethers.js v6 API
-      return new ethers.Wallet(privateKey);
+      return new ethers.Wallet(privateKey) as ethers.HDNodeWallet;
     } catch (error) {
       console.error('Failed to load wallet:', error);
       return null;
     }
   }
 
-  // Initialize IndexedDB
   private static openDatabase(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('WalletDB', 1);

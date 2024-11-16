@@ -12,7 +12,7 @@ interface WalletContextType {
   switchNetwork: (chainId: number) => Promise<void>;
 }
 
-const WalletContext = createContext<WalletContextType | null>(null);
+const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [wallet, setWallet] = useState<ethers.HDNodeWallet | null>(null);
@@ -56,7 +56,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const loadedWallet = await WalletService.loadWallet(password);
       if (loadedWallet) {
-        setWallet(loadedWallet);
+        setWallet(loadedWallet as ethers.HDNodeWallet);
         toast.success("钱包登录成功");
       } else {
         toast.error("登录失败，请检查密码是否正确");
@@ -103,7 +103,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
 export function useWallet() {
   const context = useContext(WalletContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useWallet must be used within a WalletProvider');
   }
   return context;
