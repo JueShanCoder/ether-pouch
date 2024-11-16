@@ -42,6 +42,7 @@ export function CreateWallet() {
   const handleRestore = async (mnemonic: string, password: string) => {
     try {
       await restoreFromMnemonic(mnemonic, password);
+      toast.success("钱包恢复成功");
     } catch (error) {
       toast.error("恢复钱包失败");
     }
@@ -50,9 +51,14 @@ export function CreateWallet() {
   const handleLogin = async (password: string) => {
     try {
       await loadWallet(password);
+      toast.success("登录成功");
     } catch (error) {
       toast.error("登录失败");
     }
+  };
+
+  const handleCloseMnemonicDialog = () => {
+    setShowMnemonicDialog(false);
   };
 
   return (
@@ -101,19 +107,19 @@ export function CreateWallet() {
       </Card>
 
       <Dialog open={showMnemonicDialog} onOpenChange={setShowMnemonicDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>请保存您的助记词</DialogTitle>
             <DialogDescription>
               这是您的钱包助记词，请务必安全保管。如果遗失，将无法恢复您的钱包。
             </DialogDescription>
           </DialogHeader>
-          <div className="p-4 bg-gray-100 rounded-md">
-            <code className="text-sm break-all font-mono">{mnemonic}</code>
+          <div className="p-4 bg-muted rounded-md">
+            <code className="text-sm break-all font-mono text-foreground">{mnemonic}</code>
           </div>
           <DialogFooter>
             <Button 
-              onClick={() => setShowMnemonicDialog(false)}
+              onClick={handleCloseMnemonicDialog}
               className="w-full"
             >
               我已安全保存

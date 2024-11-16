@@ -18,16 +18,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [wallet, setWallet] = useState<ethers.HDNodeWallet | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const createWallet = async (password: string) => {
+  const createWallet = async (password: string): Promise<string> => {
     try {
       setIsLoading(true);
       const { wallet: newWallet, mnemonic } = WalletService.generateWallet();
       await WalletService.storeWallet(newWallet, mnemonic, password);
-      setWallet(newWallet);
-      toast.success("钱包创建成功", {
-        description: "请务必保存好您的助记词",
-      });
-      return mnemonic;
+      return mnemonic; // 先返回助记词
     } catch (error) {
       toast.error("创建钱包失败");
       throw error;
