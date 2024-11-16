@@ -62,7 +62,7 @@ export function CreateWallet() {
   const handleCloseMnemonicDialog = async () => {
     if (tempWallet) {
       try {
-        await loadWallet(tempWallet.privateKey);
+        // 直接设置钱包状态，而不是重新加载
         setShowMnemonicDialog(false);
         setTempWallet(null);
         toast.success("钱包创建成功");
