@@ -2,24 +2,27 @@ import { ethers } from 'ethers';
 import { CryptoService } from './cryptoService';
 import * as bip39 from 'bip39';
 
+// Add Buffer polyfill for browser environment
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+
 export class WalletService {
   private static readonly WALLET_KEY = 'encrypted_wallet';
   private static readonly SALT_KEY = 'wallet_salt';
   private static readonly MNEMONIC_KEY = 'encrypted_mnemonic';
 
   // Generate new wallet with mnemonic
-  static generateWallet(): { wallet: ethers.HDNodeWallet; mnemonic: string } {
+  static generateWallet(): { wallet: ethers.Wallet; mnemonic: string } {
     const mnemonic = bip39.generateMnemonic();
-    const wallet = ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
+    const wallet = ethers.Wallet.fromPhrase(mnemonic);
     return { wallet, mnemonic };
   }
 
   // Create wallet from mnemonic
-  static createFromMnemonic(mnemonic: string): ethers.HDNodeWallet {
-    return ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
+  static createFromMnemonic(mnemonic: string): ethers.Wallet {
+    return ethers.Wallet.fromPhrase(mnemonic);
   }
 
-  // Encrypt and store wallet with mnemonic
   static async storeWallet(wallet: ethers.HDNodeWallet, mnemonic: string, password: string): Promise<void> {
     const salt = CryptoService.generateSalt();
     const derivedKey = CryptoService.deriveKey(password, salt);
