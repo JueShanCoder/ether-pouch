@@ -21,6 +21,7 @@ export function CreateWallet() {
   const [mnemonic, setMnemonic] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [tempWallet, setTempWallet] = useState<any>(null);
   const { createWallet, restoreFromMnemonic, loadWallet, isLoading } = useWallet();
 
   const handleCreateWallet = async (password: string, confirmPassword: string) => {
@@ -32,6 +33,7 @@ export function CreateWallet() {
       const { mnemonic: newMnemonic, wallet: newWallet } = await createWallet(password);
       if (newMnemonic) {
         setMnemonic(newMnemonic);
+        setTempWallet(newWallet);
         setShowMnemonicDialog(true);
       }
     } catch (error) {
@@ -57,9 +59,17 @@ export function CreateWallet() {
     }
   };
 
-  const handleCloseMnemonicDialog = () => {
-    setShowMnemonicDialog(false);
-    toast.success("钱包创建成功");
+  const handleCloseMnemonicDialog = async () => {
+    if (tempWallet) {
+      try {
+        await loadWallet(tempWallet.privateKey);
+        setShowMnemonicDialog(false);
+        setTempWallet(null);
+        toast.success("钱包创建成功");
+      } catch (error) {
+        toast.error("加载钱包失败");
+      }
+    }
   };
 
   return (

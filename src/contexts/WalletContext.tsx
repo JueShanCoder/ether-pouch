@@ -23,7 +23,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const { wallet: newWallet, mnemonic } = WalletService.generateWallet();
       await WalletService.storeWallet(newWallet, mnemonic, password);
-      setWallet(newWallet); // 直接设置钱包状态
       return { mnemonic, wallet: newWallet };
     } catch (error) {
       toast.error("创建钱包失败");
