@@ -3,7 +3,7 @@ import { useWallet } from '@/contexts/WalletContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Loader2, Lock, RefreshCw } from 'lucide-react';
+import { Loader2, Lock, RefreshCw, LogIn } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -18,9 +18,11 @@ export function CreateWallet() {
   const [mnemonic, setMnemonic] = useState('');
   const [showMnemonicDialog, setShowMnemonicDialog] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [restoreMnemonic, setRestoreMnemonic] = useState('');
   const [restorePassword, setRestorePassword] = useState('');
-  const { createWallet, restoreFromMnemonic, isLoading } = useWallet();
+  const [loginPassword, setLoginPassword] = useState('');
+  const { createWallet, restoreFromMnemonic, loadWallet, isLoading } = useWallet();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +39,11 @@ export function CreateWallet() {
     await restoreFromMnemonic(restoreMnemonic, restorePassword);
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await loadWallet(loginPassword);
+  };
+
   const isPasswordValid = password.length >= 8;
   const doPasswordsMatch = password === confirmPassword;
   const canSubmit = isPasswordValid && doPasswordsMatch && !isLoading;
@@ -47,22 +54,63 @@ export function CreateWallet() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
             <Lock className="w-5 h-5 text-primary" />
-            {isRestoring ? "恢复钱包" : "创建新钱包"}
+            {isLoggingIn ? "登录钱包" : isRestoring ? "恢复钱包" : "创建新钱包"}
           </CardTitle>
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsRestoring(!isRestoring)}
+              onClick={() => {
+                setIsRestoring(false);
+                setIsLoggingIn(!isLoggingIn);
+              }}
               className="text-primary"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              {isRestoring ? "创建新钱包" : "恢复钱包"}
+              <LogIn className="w-4 h-4 mr-2" />
+              {isLoggingIn ? "创建新钱包" : "登录钱包"}
             </Button>
+            {!isLoggingIn && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsRestoring(!isRestoring)}
+                className="text-primary"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                {isRestoring ? "创建新钱包" : "恢复钱包"}
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>
-          {isRestoring ? (
+          {isLoggingIn ? (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  placeholder="输入钱包密码"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                  className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full transition-all duration-200"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    登录中...
+                  </>
+                ) : (
+                  '登录钱包'
+                )}
+              </Button>
+            </form>
+          ) : isRestoring ? (
             <form onSubmit={handleRestore} className="space-y-4">
               <div className="space-y-2">
                 <Input
