@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { ethers } from 'ethers';
 import { WalletService } from '../services/walletService';
-import { useToast } from '@/components/ui/use-toast';
 import { toast } from 'sonner';
 
 interface WalletContextType {
