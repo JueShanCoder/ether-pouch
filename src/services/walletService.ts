@@ -45,7 +45,10 @@ export class WalletService {
 
       const derivedKey = CryptoService.deriveKey(password, salt);
       const privateKey = CryptoService.decrypt(encryptedPrivateKey, derivedKey);
-      return new ethers.Wallet(privateKey) as ethers.HDNodeWallet;
+      
+      // Create HDNodeWallet from private key
+      const wallet = new ethers.Wallet(privateKey);
+      return ethers.HDNodeWallet.fromMnemonic(wallet.mnemonic?.phrase || '') as ethers.HDNodeWallet;
     } catch (error) {
       console.error('Failed to load wallet:', error);
       return null;
