@@ -1,10 +1,14 @@
 import { CreateWallet } from '@/components/CreateWallet';
+import { LoginWallet } from '@/components/LoginWallet';
 import { WalletDashboard } from '@/components/WalletDashboard';
 import { Wallet } from 'lucide-react';
 import { useWallet } from '@/contexts/WalletContext';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const { wallet } = useWallet();
+  const [showLogin, setShowLogin] = useState(true);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-100 via-purple-50 to-blue-100 flex items-center justify-center p-4">
@@ -30,7 +34,40 @@ const Index = () => {
             <span>安全便捷</span>
           </div>
         </div>
-        {wallet ? <WalletDashboard /> : <CreateWallet />}
+        
+        {wallet ? (
+          <WalletDashboard />
+        ) : (
+          <div className="space-y-4">
+            {showLogin ? (
+              <>
+                <LoginWallet />
+                <div className="text-center">
+                  <Button 
+                    variant="link" 
+                    onClick={() => setShowLogin(false)}
+                    className="text-sm text-gray-500 hover:text-gray-700"
+                  >
+                    没有钱包？创建一个新钱包
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <CreateWallet />
+                <div className="text-center">
+                  <Button 
+                    variant="link" 
+                    onClick={() => setShowLogin(true)}
+                    className="text-sm text-gray-500 hover:text-gray-700"
+                  >
+                    已有钱包？点此登录
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
