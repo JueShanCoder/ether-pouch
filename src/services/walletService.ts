@@ -14,13 +14,13 @@ export class WalletService {
   // Generate new wallet with mnemonic
   static generateWallet(): { wallet: ethers.HDNodeWallet; mnemonic: string } {
     const mnemonic = bip39.generateMnemonic();
-    const wallet = ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
+    const wallet = ethers.HDNodeWallet.fromPhrase(mnemonic);
     return { wallet, mnemonic };
   }
 
   // Create wallet from mnemonic
   static createFromMnemonic(mnemonic: string): ethers.HDNodeWallet {
-    return ethers.Wallet.fromPhrase(mnemonic) as ethers.HDNodeWallet;
+    return ethers.HDNodeWallet.fromPhrase(mnemonic);
   }
 
   static async storeWallet(wallet: ethers.HDNodeWallet, mnemonic: string, password: string): Promise<void> {
@@ -59,7 +59,7 @@ export class WalletService {
       const derivedKey = CryptoService.deriveKey(password, salt);
       const privateKey = CryptoService.decrypt(encryptedPrivateKey, derivedKey);
       
-      return new ethers.Wallet(privateKey) as ethers.HDNodeWallet;
+      return ethers.HDNodeWallet.fromPrivateKey(privateKey);
     } catch (error) {
       console.error('Failed to load wallet:', error);
       return null;
