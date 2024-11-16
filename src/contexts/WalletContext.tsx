@@ -23,7 +23,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const newWallet = WalletService.generateWallet();
       await WalletService.storeWallet(newWallet, password);
-      setWallet(newWallet);
+      // Convert HDNodeWallet to Wallet before setting state
+      const baseWallet = new ethers.Wallet(newWallet.privateKey);
+      setWallet(baseWallet);
       toast({
         title: "Wallet Created",
         description: "Your wallet has been created and encrypted successfully",
