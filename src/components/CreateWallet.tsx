@@ -22,7 +22,7 @@ export function CreateWallet() {
   const [isRestoring, setIsRestoring] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [tempWallet, setTempWallet] = useState<any>(null);
-  const { createWallet, restoreFromMnemonic, loadWallet, isLoading } = useWallet();
+  const { createWallet, restoreFromMnemonic, loadWallet, isLoading, setWallet } = useWallet();
 
   const handleCreateWallet = async (password: string, confirmPassword: string) => {
     if (password !== confirmPassword) {
@@ -62,8 +62,8 @@ export function CreateWallet() {
   const handleCloseMnemonicDialog = async () => {
     if (tempWallet) {
       try {
-        // 直接设置钱包状态，而不是重新加载
         setShowMnemonicDialog(false);
+        setWallet(tempWallet); // 在用户确认已保存助记词后才设置钱包
         setTempWallet(null);
         toast.success("钱包创建成功");
       } catch (error) {
