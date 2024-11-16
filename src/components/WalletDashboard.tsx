@@ -5,11 +5,36 @@ import { Button } from '@/components/ui/button';
 import { Copy, ExternalLink, Key, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { ethers } from 'ethers';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const NETWORKS = {
+  eth: {
+    name: 'Ethereum',
+    rpc: 'https://eth.llamarpc.com',
+    explorer: 'https://etherscan.io',
+    symbol: 'ETH',
+    className: 'bg-blue-500'
+  },
+  arb: {
+    name: 'Arbitrum',
+    rpc: 'https://arb1.arbitrum.io/rpc',
+    explorer: 'https://arbiscan.io',
+    symbol: 'ARB',
+    className: 'bg-blue-400'
+  }
+};
 
 export function WalletDashboard() {
   const { wallet } = useWallet();
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const [balance, setBalance] = useState<string>('0');
+  const [currentNetwork, setCurrentNetwork] = useState<'eth' | 'arb'>('eth');
 
   const copyAddress = async () => {
     if (wallet?.address) {
@@ -33,7 +58,7 @@ export function WalletDashboard() {
   const fetchBalance = async () => {
     if (wallet?.address) {
       try {
-        const provider = new ethers.JsonRpcProvider('https://eth.llamarpc.com');
+        const provider = new ethers.JsonRpcProvider(NETWORKS[currentNetwork].rpc);
         const balanceWei = await provider.getBalance(wallet.address);
         const balanceEth = ethers.formatEther(balanceWei);
         setBalance(parseFloat(balanceEth).toFixed(4));
@@ -44,10 +69,14 @@ export function WalletDashboard() {
     }
   };
 
-  // Fetch balance on component mount
+  const handleNetworkChange = (network: 'eth' | 'arb') => {
+    setCurrentNetwork(network);
+    toast.success(`已切换到 ${NETWORKS[network].name} 网络`);
+  };
+
   useEffect(() => {
     fetchBalance();
-  }, [wallet?.address]);
+  }, [wallet?.address, currentNetwork]);
 
   return (
     <Card className="w-full backdrop-blur-sm bg-white/90 shadow-xl border-t border-l border-white/20">
@@ -67,7 +96,7 @@ export function WalletDashboard() {
             <Button 
               variant="outline" 
               size="icon" 
-              onClick={() => window.open(`https://etherscan.io/address/${wallet?.address}`, '_blank')}
+              onClick={() => window.open(`${NETWORKS[currentNetwork].explorer}/address/${wallet?.address}`, '_blank')}
             >
               <ExternalLink className="h-4 w-4" />
             </Button>
@@ -95,19 +124,32 @@ export function WalletDashboard() {
 
         <div className="space-y-2">
           <label className="text-sm text-gray-500">当前网络</label>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 p-2 bg-gray-100 rounded">
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              <span className="text-sm">Ethereum Mainnet</span>
-            </div>
-          </div>
+          <Select value={currentNetwork} onValueChange={(value: 'eth' | 'arb') => handleNetworkChange(value)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="eth">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${NETWORKS.eth.className}`}></div>
+                  <span>{NETWORKS.eth.name}</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="arb">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${NETWORKS.arb.className}`}></div>
+                  <span>{NETWORKS.arb.name}</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-gray-500">ETH 余额</label>
+          <label className="text-sm text-gray-500">{NETWORKS[currentNetwork].symbol} 余额</label>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 p-2 bg-gray-100 rounded w-full">
-              <span className="text-sm font-mono">{balance} ETH</span>
+              <span className="text-sm font-mono">{balance} {NETWORKS[currentNetwork].symbol}</span>
             </div>
             <Button 
               variant="outline" 
