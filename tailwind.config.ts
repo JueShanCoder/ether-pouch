@@ -25,16 +25,16 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#7C3AED",
+          hover: "#6D28D9",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#60A5FA",
+          hover: "#3B82F6",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+        success: {
+          DEFAULT: "#10B981",
+          hover: "#059669",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -44,14 +44,20 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        sans: ['Inter var', 'sans-serif'],
+      },
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(to right, #7C3AED, #60A5FA)',
       },
       borderRadius: {
         lg: "var(--radius)",

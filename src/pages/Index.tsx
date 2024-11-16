@@ -1,13 +1,15 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Web3Provider } from '@/contexts/Web3Context';
+import { WalletCard } from '@/components/WalletCard';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <Web3Provider>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <WalletCard />
+        </div>
       </div>
-    </div>
+    </Web3Provider>
   );
 };
 
