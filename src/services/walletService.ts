@@ -28,7 +28,7 @@ export class WalletService {
   }
 
   // Load wallet from storage
-  static async loadWallet(password: string): Promise<ethers.HDNodeWallet | null> {
+  static async loadWallet(password: string): Promise<ethers.Wallet | null> {
     try {
       const db = await this.openDatabase();
       const tx = db.transaction(['wallets'], 'readonly');
@@ -47,7 +47,7 @@ export class WalletService {
       const privateKey = CryptoService.decrypt(encryptedPrivateKey, derivedKey);
       
       // Create wallet from private key using ethers.js v6 API
-      return new ethers.Wallet(privateKey) as ethers.HDNodeWallet;
+      return new ethers.Wallet(privateKey);
     } catch (error) {
       console.error('Failed to load wallet:', error);
       return null;
