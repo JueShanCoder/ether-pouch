@@ -1,7 +1,11 @@
 import { CreateWallet } from '@/components/CreateWallet';
+import { WalletDashboard } from '@/components/WalletDashboard';
 import { Wallet } from 'lucide-react';
+import { useWallet } from '@/contexts/WalletContext';
 
 const Index = () => {
+  const { wallet } = useWallet();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-100 via-purple-50 to-blue-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
@@ -26,7 +30,7 @@ const Index = () => {
             <span>安全便捷</span>
           </div>
         </div>
-        <CreateWallet />
+        {wallet ? <WalletDashboard /> : <CreateWallet />}
       </div>
     </div>
   );
