@@ -84,7 +84,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
       toast({
         title: "Transaction Confirmed",
         description: "Transaction has been confirmed",
-        variant: "success",
       });
 
       // Update balance after transaction
@@ -100,7 +99,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Handle account changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts: string[]) => {
         if (accounts.length === 0) {

@@ -6,12 +6,12 @@ export class WalletService {
   private static readonly SALT_KEY = 'wallet_salt';
 
   // Generate new wallet
-  static generateWallet(): ethers.Wallet {
-    return ethers.Wallet.createRandom();
+  static generateWallet(): ethers.HDNodeWallet {
+    return ethers.Wallet.createRandom() as ethers.HDNodeWallet;
   }
 
   // Encrypt and store wallet
-  static async storeWallet(wallet: ethers.Wallet, password: string): Promise<void> {
+  static async storeWallet(wallet: ethers.HDNodeWallet, password: string): Promise<void> {
     const salt = CryptoService.generateSalt();
     const derivedKey = CryptoService.deriveKey(password, salt);
     const encryptedPrivateKey = CryptoService.encrypt(wallet.privateKey, derivedKey);
@@ -22,21 +22,21 @@ export class WalletService {
     const store = tx.objectStore('wallets');
     
     await Promise.all([
-      store.put(encryptedPrivateKey, this.WALLET_KEY),
-      store.put(salt, this.SALT_KEY)
+      this.putInStore(store, this.WALLET_KEY, encryptedPrivateKey),
+      this.putInStore(store, this.SALT_KEY, salt)
     ]);
   }
 
   // Load wallet from storage
-  static async loadWallet(password: string): Promise<ethers.Wallet | null> {
+  static async loadWallet(password: string): Promise<ethers.HDNodeWallet | null> {
     try {
       const db = await this.openDatabase();
       const tx = db.transaction(['wallets'], 'readonly');
       const store = tx.objectStore('wallets');
 
       const [encryptedPrivateKey, salt] = await Promise.all([
-        store.get(this.WALLET_KEY),
-        store.get(this.SALT_KEY)
+        this.getFromStore(store, this.WALLET_KEY),
+        this.getFromStore(store, this.SALT_KEY)
       ]);
 
       if (!encryptedPrivateKey || !salt) {
@@ -45,7 +45,7 @@ export class WalletService {
 
       const derivedKey = CryptoService.deriveKey(password, salt);
       const privateKey = CryptoService.decrypt(encryptedPrivateKey, derivedKey);
-      return new ethers.Wallet(privateKey);
+      return new ethers.Wallet(privateKey) as ethers.HDNodeWallet;
     } catch (error) {
       console.error('Failed to load wallet:', error);
       return null;
@@ -64,6 +64,24 @@ export class WalletService {
         const db = (event.target as IDBOpenDBRequest).result;
         db.createObjectStore('wallets');
       };
+    });
+  }
+
+  // Helper method to put data in store
+  private static putInStore(store: IDBObjectStore, key: string, value: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const request = store.put(value, key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  // Helper method to get data from store
+  private static getFromStore(store: IDBObjectStore, key: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const request = store.get(key);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
     });
   }
 }
