@@ -4,7 +4,7 @@ import { WalletService } from '../services/walletService';
 import { useToast } from '@/components/ui/use-toast';
 
 interface WalletContextType {
-  wallet: ethers.Wallet | null;
+  wallet: ethers.HDNodeWallet | null;
   isLoading: boolean;
   createWallet: (password: string) => Promise<void>;
   loadWallet: (password: string) => Promise<void>;
@@ -14,7 +14,7 @@ interface WalletContextType {
 const WalletContext = createContext<WalletContextType | null>(null);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [wallet, setWallet] = useState<ethers.Wallet | null>(null);
+  const [wallet, setWallet] = useState<ethers.HDNodeWallet | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
