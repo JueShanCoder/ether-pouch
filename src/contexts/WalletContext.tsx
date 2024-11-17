@@ -6,11 +6,12 @@ import { toast } from 'sonner';
 interface WalletContextType {
   wallet: ethers.HDNodeWallet | null;
   isLoading: boolean;
+  currentNetwork: 'eth' | 'arb';
   setWallet: (wallet: ethers.HDNodeWallet) => void;
   createWallet: (password: string) => Promise<{ mnemonic: string, wallet: ethers.HDNodeWallet }>;
   loadWallet: (password: string) => Promise<void>;
   restoreFromMnemonic: (mnemonic: string, password: string) => Promise<void>;
-  switchNetwork: (chainId: number) => Promise<void>;
+  switchNetwork: (network: 'eth' | 'arb') => void;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -18,6 +19,7 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [wallet, setWallet] = useState<ethers.HDNodeWallet | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentNetwork, setCurrentNetwork] = useState<'eth' | 'arb'>('eth');
 
   const createWallet = async (password: string): Promise<{ mnemonic: string, wallet: ethers.HDNodeWallet }> => {
     try {
@@ -66,20 +68,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const switchNetwork = async (chainId: number) => {
-    if (!wallet) return;
-
-    try {
-      await window.ethereum?.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: `0x${chainId.toString(16)}` }],
-      });
-      toast.success("切换网络成功");
-    } catch (error: any) {
-      if (error.code === 4902) {
-        toast.error("请先添加该网络");
-      }
-    }
+  const switchNetwork = (network: 'eth' | 'arb') => {
+    setCurrentNetwork(network);
+    toast.success(`已切换到 ${network.toUpperCase()} 网络`);
   };
 
   return (
@@ -87,6 +78,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       value={{
         wallet,
         isLoading,
+        currentNetwork,
         setWallet,
         createWallet,
         loadWallet,
