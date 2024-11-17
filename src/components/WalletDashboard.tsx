@@ -31,10 +31,9 @@ const NETWORKS = {
 };
 
 export function WalletDashboard() {
-  const { wallet } = useWallet();
+  const { wallet, currentNetwork, switchNetwork } = useWallet();
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const [balance, setBalance] = useState<string>('0');
-  const [currentNetwork, setCurrentNetwork] = useState<'eth' | 'arb'>('eth');
 
   const copyAddress = async () => {
     if (wallet?.address) {
@@ -70,7 +69,7 @@ export function WalletDashboard() {
   };
 
   const handleNetworkChange = (network: 'eth' | 'arb') => {
-    setCurrentNetwork(network);
+    switchNetwork(network);
     toast.success(`已切换到 ${NETWORKS[network].name} 网络`);
   };
 
@@ -124,7 +123,7 @@ export function WalletDashboard() {
 
         <div className="space-y-2">
           <label className="text-sm text-gray-500">当前网络</label>
-          <Select value={currentNetwork} onValueChange={(value: 'eth' | 'arb') => handleNetworkChange(value)}>
+          <Select value={currentNetwork} onValueChange={handleNetworkChange}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
